@@ -25,7 +25,7 @@ Run
 ```sh
 python cdf.py
 ```
-to see the main difference between SDFs and CDF. (Figure 1 in the paper)/
+to see the main difference between SDFs and CDF. 
 
 You can also replace the line 
 ```python
@@ -43,7 +43,7 @@ to see how gradient projection works in solving inverse kinematics in one-step w
 
 - Examples for data generation and neural network training can be found at 'data_generator.py' and  'nn_cdf.py'.
 
-- Note: Many funtions require the RDF library (such as offline data generation, comparison with SDFs). You can run 
+Note: Many funtions require the RDF library (such as offline data generation, comparison with SDFs). You can run 
 ```sh
 git clone https://github.com/yimingli1998/RDF.git
 ```
@@ -67,6 +67,7 @@ python wik_eval.py
 ```
 to evalute the whole-body inverse kinematics and compare it with baseline approaches.
 
+--------------------------------------------------------
 
 CDF is maintained by Yiming LI and licensed under the MIT License.
 
