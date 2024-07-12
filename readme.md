@@ -67,8 +67,8 @@ python wik_eval.py
 ```
 to evalute the whole-body inverse kinematics and compare it with baseline approaches.
 
-
 Motion planning examples are coming soon.
+
 --------------------------------------------------------
 
 CDF is maintained by Yiming LI and licensed under the MIT License.
