@@ -68,10 +68,13 @@ python wik_eval.py
 to evalute the whole-body inverse kinematics and compare it with baseline approaches.
 
 For motion planning, you can run 
+
 ```sh
 python qp_mp.py 
 ```
+
 to see a simple example that uses a reactive QP controller for collision avoidance. this example is in a static scene but it also works for moving objects.
+
 --------------------------------------------------------
 
 CDF is maintained by Yiming LI and licensed under the MIT License.
