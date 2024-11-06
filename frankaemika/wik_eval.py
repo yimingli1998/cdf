@@ -1,4 +1,9 @@
-# 7D panda robot
+# -----------------------------------------------------------------------------
+# SPDX-License-Identifier: MIT
+# This file is part of the CDF project.
+# Copyright (c) 2024 Idiap Research Institute <contact@idiap.ch>
+# Contributor: Yimming Li <yiming.li@idiap.ch>
+# -----------------------------------------------------------------------------
 
 import numpy as np
 import os

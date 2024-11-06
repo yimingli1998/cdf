@@ -1,3 +1,11 @@
+# -----------------------------------------------------------------------------
+# SPDX-License-Identifier: MIT
+# This file is part of the CDF project.
+# Copyright (c) 2024 Idiap Research Institute <contact@idiap.ch>
+# Contributor: Yimming Li <yiming.li@idiap.ch>
+# -----------------------------------------------------------------------------
+
+
 import torch
 import os
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))

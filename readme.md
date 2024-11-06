@@ -79,4 +79,4 @@ to see a simple example that uses a reactive QP controller for collision avoidan
 
 CDF is maintained by Yiming LI and licensed under the MIT License.
 
-Copyright (c) 2023 Idiap Research Institute <contact@idiap.ch>
+Copyright (c) 2024 Idiap Research Institute <contact@idiap.ch>

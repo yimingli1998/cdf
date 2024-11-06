@@ -1,3 +1,11 @@
+# -----------------------------------------------------------------------------
+# SPDX-License-Identifier: MIT
+# This file is part of the CDF project.
+# Copyright (c) 2024 Idiap Research Institute <contact@idiap.ch>
+# Contributor: Yimming Li <yiming.li@idiap.ch>
+# -----------------------------------------------------------------------------
+
+
 import time
 import numpy as np
 from math import pi
