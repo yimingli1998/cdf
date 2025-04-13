@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 # This file is part of the CDF project.
 # Copyright (c) 2024 Idiap Research Institute <contact@idiap.ch>
-# Contributor: Yimming Li <yiming.li@idiap.ch>
+# Contributor: Yiming Li <yiming.li@idiap.ch>
 # -----------------------------------------------------------------------------
 
 # 2D example for configuration space distance field
@@ -27,7 +27,7 @@ CUR_PATH = os.path.dirname(os.path.realpath(__file__))
 class CDF2D:
     def __init__(self,device) -> None:
         self.device = device    
-        self.nbData =  100
+        self.nbData =  50
         self.nbDiscretization = 50
         self.Q_grid = self.create_grid_torch(self.nbData).to(device)
         self.link_length = torch.tensor([[2,2]]).float().to(device)
