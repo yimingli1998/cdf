@@ -20,15 +20,26 @@ if __name__ == "__main__":
     net.eval()
 
 
-    l4c_model = l4c.L4CasADi(net, device='cuda')  # device='cuda' for GPU
+    l4c_model = l4c.L4CasADi(net, device='cuda',batched=True)  # device='cuda' for GPU
     x_sym = cs.MX.sym('x', 1, 4)
     y_sym = l4c_model(x_sym)
     f = cs.Function('y', [x_sym], [y_sym])
     df = cs.Function('dy', [x_sym], [cs.jacobian(y_sym, x_sym)])
     ddf = cs.Function('ddy', [x_sym], [cs.hessian(y_sym, x_sym)[0]])
 
-    x = cs.DM([[0.], [2.],[0.], [2.]])
-    print(l4c_model(x))
-    print(f(x))
-    print(df(x))
-    print(ddf(x))
+
+    # Single sample (1x4)
+    x_single = cs.DM([[0.0, 1.0, 2.0, 3.0]])
+    print("Single sample:")
+    print("l4c_model:", l4c_model(x_single))
+    print("f:", f(x_single))
+    print("df:", df(x_single))
+    print("ddf:", ddf(x_single))
+    
+    # Batched samples (1x12 for 3 samples of 4D each)
+    x_batch = cs.DM([[0.0, 1.0, 2.0, 3.0,    # sample 1
+                      1.0, 2.0, 3.0, 4.0,    # sample 2  
+                      2.0, 3.0, 4.0, 5.0]])  # sample 3
+    print("\nBatched samples:")
+    print("l4c_model batch:", l4c_model(x_batch))
+    print("f batch:", f(x_batch))
