@@ -29,12 +29,12 @@ class CDF:
         # device
         self.device = device  
 
-        # # uncomment these lines to process the generated data and train your own CDF
+        # # # uncomment these lines to process the generated data and train your own CDF
         # self.raw_data = np.load(os.path.join(CUR_PATH,'data.npy'),allow_pickle=True).item()
         # self.process_data(self.raw_data)
-        # self.data_path = os.path.join(CUR_PATH,'data.pt') 
-        # self.data = self.load_data(self.data_path)
-        # self.len_data = len(self.data['k'])
+        self.data_path = os.path.join(CUR_PATH,'data.pt') 
+        self.data = self.load_data(self.data_path)
+        self.len_data = len(self.data['k'])
 
         self.batch_x = 10
         self.batch_q = 100
@@ -95,7 +95,7 @@ class CDF:
         x_batch,q_lib = x[idx],q[idx]
         # print(x_batch)
         q_batch = self.sample_q()   
-        d,grad = self.decode_distance(x_batch,q_batch,q_lib)
+        d,grad = self.decode_distance(q_batch,q_lib)
         return x_batch,q_batch,d,grad
 
     def decode_distance(self,q_batch,q_lib):
@@ -157,18 +157,16 @@ class CDF:
                 inputs = torch.cat([x_inputs,q_inputs],dim=-1)
                 outputs = d.reshape(-1,1)
                 gt_grad = gt_grad.reshape(-1,7)
-
                 weights = torch.ones_like(outputs).to(device)
                 # weights = (1/outputs).clamp(0,1)
 
                 d_pred = model.forward(inputs)
                 d_grad_pred = torch.autograd.grad(d_pred, q_inputs, torch.ones_like(d_pred), retain_graph=True,create_graph=True)[0]
-
                 # Compute the Eikonal loss
                 eikonal_loss = torch.abs(d_grad_pred.norm(2, dim=-1) - 1).mean()
 
                 # Compute the tension loss
-                dd_grad_pred = torch.autograd.grad(d_grad_pred, q_inputs, torch.ones_like(d_pred), retain_graph=True,create_graph=True)[0]
+                dd_grad_pred = torch.autograd.grad(d_grad_pred, q_inputs, torch.ones_like(d_grad_pred), retain_graph=True,create_graph=True)[0]
 
                 # gradient loss
                 gradient_loss = (1 - COSLOSS(d_grad_pred, gt_grad)).mean()
@@ -194,7 +192,7 @@ class CDF:
                 if iter % 10 == 0:
                     print(f"Epoch:{iter}\tMSE Loss: {d_loss.item():.3f}\tEikonal Loss: {eikonal_loss.item():.3f}\tTension Loss: {tension_loss.item():.3f}\tGradient Loss: {gradient_loss.item():.3f}\tTotal loss:{loss.item():.3f}\tTime: {time.strftime('%H:%M:%S', time.gmtime())}")
                     model_dict[iter] = model.state_dict()
-                    torch.save(model_dict, os.path.join(CUR_PATH,'model_dict.pt'))
+                    # torch.save(model_dict, os.path.join(CUR_PATH,'model_dict.pt'))
         return model
     
     def inference(self,x,q,model):
@@ -289,14 +287,37 @@ class CDF:
             print(f'MAE:{res[:,0].mean()}\tRMSE:{res[:,1].mean()}\tSR:{res[:,2].mean()}')
             print(f'MAE:{res[:,0].std()}\tRMSE:{res[:,1].std()}\tSR:{res[:,2].std()}')
 
+    def check_data(self):
+        # x_batch:(batch_x,3)
+        # q_batch:(batch_q,7)
+        # d:(batch_x,batch_q)
+        # grad:(batch_x,batch_q,7)
+        x_batch,q_batch,d,grad = self.select_data()
+        q_proj = self.projection(q_batch,d,grad)
+
+        # visualize
+        import trimesh
+        pose = torch.eye(4).unsqueeze(0).to(self.device).float()
+        for q0,q1 in zip(q_batch,q_proj[1]):
+            scene = trimesh.Scene()
+            scene.add_geometry(trimesh.PointCloud(x_batch.data.cpu().numpy(),colors=[255,0,0]))
+            robot_mesh0 = self.panda.get_forward_robot_mesh(pose, q0.unsqueeze(0))[0]
+            robot_mesh0 = np.sum(robot_mesh0)
+            robot_mesh0.visual.face_colors = [0,255,0,100]
+            scene.add_geometry(robot_mesh0)
+            robot_mesh1 = self.panda.get_forward_robot_mesh(pose, q1.unsqueeze(0))[0]
+            robot_mesh1 = np.sum(robot_mesh1)
+            robot_mesh1.visual.face_colors = [0,0,255,100]
+            scene.add_geometry(robot_mesh1)
+            scene.show()
 
 if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # device = torch.device("cpu")
     cdf = CDF(device)
-
-    # trainer.train_nn(epoches=20000)
+    # cdf.check_data()
+    cdf.train_nn(epoches=20000)
     
     model = MLPRegression(input_dims=10, output_dims=1, mlp_layers=[1024, 512, 256, 128, 128],skips=[], act_fn=torch.nn.ReLU, nerf=True)
     # model.load_state_dict(torch.load(os.path.join(CUR_PATH,'model_dict.pt'))[19900])
